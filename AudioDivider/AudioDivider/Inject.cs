@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace SoundTest_C
+namespace AudioControl
 {
     class Injector
     {

@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
-using SoundTest_C.WASAPI;
+using AudioControl.WASAPI;
 
-namespace SoundTest_C
+namespace AudioControl
 {
     class SoundInfoDevice
     {

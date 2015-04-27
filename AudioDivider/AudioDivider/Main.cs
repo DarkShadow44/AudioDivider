@@ -7,7 +7,7 @@ using System.Security.Principal;
 using Microsoft.Win32;
 using System.IO;
 
-namespace SoundTest_C
+namespace AudioControl
 {
     static class Program
     {

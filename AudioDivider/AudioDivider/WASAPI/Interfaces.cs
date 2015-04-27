@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace SoundTest_C.WASAPI
+namespace AudioControl.WASAPI
 {
 
     // #################### COM classes ####################

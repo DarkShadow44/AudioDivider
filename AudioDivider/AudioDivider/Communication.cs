@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace SoundTest_C
+namespace AudioControl
 {
     class Communication
     {

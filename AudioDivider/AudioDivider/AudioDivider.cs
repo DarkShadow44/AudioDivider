@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 
-namespace SoundTest_C
+namespace AudioControl
 {
     public partial class AudioDivider : Form
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.IO;
 
-namespace SoundTest_C
+namespace AudioControl
 {
     class Logging
     {

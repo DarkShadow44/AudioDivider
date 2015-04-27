@@ -1,4 +1,4 @@
-﻿namespace SoundTest_C
+﻿namespace AudioControl
 {
     partial class AudioDivider
     {
