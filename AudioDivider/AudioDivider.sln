@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioDivider", "AudioDivider\AudioDivider.csproj", "{096CF617-3D78-4EFD-95DE-4F0E4DD50899}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release (32bit)|x86 = Release (32bit)|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{096CF617-3D78-4EFD-95DE-4F0E4DD50899}.Debug|x86.ActiveCfg = Debug|x86
+		{096CF617-3D78-4EFD-95DE-4F0E4DD50899}.Debug|x86.Build.0 = Debug|x86
+		{096CF617-3D78-4EFD-95DE-4F0E4DD50899}.Release (32bit)|x86.ActiveCfg = Release (32bit)|x86
+		{096CF617-3D78-4EFD-95DE-4F0E4DD50899}.Release (32bit)|x86.Build.0 = Release (32bit)|x86
+		{096CF617-3D78-4EFD-95DE-4F0E4DD50899}.Release|x86.ActiveCfg = Release|x86
+		{096CF617-3D78-4EFD-95DE-4F0E4DD50899}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

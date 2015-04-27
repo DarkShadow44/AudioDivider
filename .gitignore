@@ -1,0 +1,13 @@
+_Release/
+Helper/Helper/Debug/
+Helper/Helper/Release/
+SoundHook/Release64/
+SoundHook/Release/
+SoundHook/Debug64/
+SoundHook/SoundHook/Debug/
+SoundHook/SoundHook/Release/
+SoundHook/SoundHook/Debug64/
+SoundHook/SoundHook/Release64/
+AudioDivider/AudioDivider/bin/
+AudioDivider/AudioDivider/obj/
+SoundHook/Debug/
