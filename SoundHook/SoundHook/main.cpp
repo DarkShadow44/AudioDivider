@@ -25,7 +25,7 @@ void addLog(std::string text)
 	if(LogPath.empty())
 		return;
 	std::fstream log;
-	log.open (LogPath + "SoundDivider.log", std::fstream::out | std::fstream::app);
+	log.open (LogPath + "AudioDivider.log", std::fstream::out | std::fstream::app);
 
 	log << GetTimeStamp() << text << std::endl;
 
@@ -37,7 +37,7 @@ void addLog(std::string text, int data)
 	if(LogPath.empty())
 		return;
 	std::fstream log;
-	log.open (LogPath + "SoundDivider.log", std::fstream::out | std::fstream::app);
+	log.open (LogPath + "AudioDivider.log", std::fstream::out | std::fstream::app);
 
 	log << GetTimeStamp() << text << data << std::endl;
 

@@ -20,14 +20,14 @@ namespace AudioControl
         {
             try
             {
-                File.AppendAllText(Logging.workingDirectory + "SoundDivider.log", DateTime.Now.ToString("'['hh':'mm':'ss'] '") + "(Server): " + text + "\n");
+                File.AppendAllText(Logging.workingDirectory + "AudioDivider.log", DateTime.Now.ToString("'['hh':'mm':'ss'] '") + "(Server): " + text + "\n");
             }
             catch (Exception)
             {
                 try
                 {
                     Thread.Sleep(100); // To work against race conditions when injecting the Dll
-                    File.AppendAllText(Logging.workingDirectory + "SoundDivider.log", DateTime.Now.ToString("'['hh':'mm':'ss'] '") + "(Server): " + text + "\n");
+                    File.AppendAllText(Logging.workingDirectory + "AudioDivider.log", DateTime.Now.ToString("'['hh':'mm':'ss'] '") + "(Server): " + text + "\n");
                 }
                 catch (Exception)
                 {
@@ -39,14 +39,14 @@ namespace AudioControl
         {
             try
             {
-                File.AppendAllText(Logging.workingDirectory + "SoundDivider.log", DateTime.Now.ToString("'['hh':'mm':'ss'] '") + "(Server): " + text + data + "\n");
+                File.AppendAllText(Logging.workingDirectory + "AudioDivider.log", DateTime.Now.ToString("'['hh':'mm':'ss'] '") + "(Server): " + text + data + "\n");
             }
             catch (Exception)
             {
                 try
                 {
                     Thread.Sleep(100); // To work against race conditions when injecting the Dll
-                    File.AppendAllText(Logging.workingDirectory + "SoundDivider.log", DateTime.Now.ToString("'['hh':'mm':'ss'] '") + "(Server): " + text + data + "\n");
+                    File.AppendAllText(Logging.workingDirectory + "AudioDivider.log", DateTime.Now.ToString("'['hh':'mm':'ss'] '") + "(Server): " + text + data + "\n");
                 }
                 catch (Exception)
                 {
