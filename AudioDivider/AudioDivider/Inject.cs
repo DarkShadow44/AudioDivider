@@ -9,11 +9,19 @@ namespace AudioDivider
 {
     class Injector
     {
+        Logger logger;
+        Security security;
+        public Injector()
+        {
+            logger = Logger.getLogger();
+            security = new Security();
+            Initialize();
+        }
 
-        static int LoadLibrary32Address; // Address of LoadLibrary in 32Bit modules, we get this using a 32Bit-helper program. We need this because the address of LoadLibrary is different in 64Bit and 32Bit processes.
-        static string WorkingDirectory;
+        int LoadLibrary32Address; // Address of LoadLibrary in 32Bit modules, we get this using a 32Bit-helper program. We need this because the address of LoadLibrary is different in 64Bit and 32Bit processes.
+        string WorkingDirectory;
 
-        public static void Initialize()
+        void Initialize()
         {
             WorkingDirectory = System.IO.Directory.GetCurrentDirectory();
 
@@ -34,7 +42,7 @@ namespace AudioDivider
 #endif
 
             Process.EnterDebugMode();
-            Security.EnableSeSecurityPrivilege();
+            security.EnableSeSecurityPrivilege();
 
             Process process = new Process();
             process.StartInfo.FileName = WorkingDirectory + @"\Helper.exe";
@@ -48,7 +56,7 @@ namespace AudioDivider
         }
 
         // Inject the DLL setting the hook into a process
-        public static void Inject(int pid)
+        public void Inject(int pid)
         {
             int error;
 
@@ -85,24 +93,24 @@ namespace AudioDivider
             IntPtr memPath = Native.VirtualAllocEx(hProcess, IntPtr.Zero, new IntPtr(200), Native.MEM_COMMIT | Native.MEM_RESERVE, Native.PAGE_READWRITE);
             if (memPath == IntPtr.Zero)
             {
-                Logging.Error("'VirtualAllocEx' failed: " + Native.GetLastError());
+                logger.Error("'VirtualAllocEx' failed: " + Native.GetLastError());
             }
             IntPtr bytesWritten;
             IntPtr strPtr = Marshal.StringToHGlobalAnsi(dllPath);
             error = Native.WriteProcessMemory(hProcess, memPath, strPtr, new IntPtr(dllPath.Length + 1), out bytesWritten);
             if (error != 1)
-                Logging.Error("'WriteProcessMemory' failed.");
+                logger.Error("'WriteProcessMemory' failed.");
 
             int threadId;
             IntPtr handleThread = Native.CreateRemoteThread(hProcess, IntPtr.Zero, IntPtr.Zero, addressLoadLibrary, memPath, 0, out threadId);
             if (handleThread == IntPtr.Zero)
             {
-                Logging.Log("inject failed : ", Marshal.GetLastWin32Error());
+                logger.Log("inject failed : ", Marshal.GetLastWin32Error());
                 System.Windows.Forms.MessageBox.Show("Failed to control the program.", "Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
             else
             {
-                Logging.Log("Inject successful");
+                logger.Log("Inject successful");
             }
         }
 

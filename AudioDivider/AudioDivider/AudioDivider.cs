@@ -12,15 +12,20 @@ namespace AudioDivider
 {
     public partial class FormAudioDivider : Form
     {
+
+        Communication communication;
+        Injector injector;
+
         public FormAudioDivider()
         {
             InitializeComponent();
+            communication = new Communication();
+            injector = new Injector();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Injector.Initialize();
-            Communication.ServerStart();
+            communication.ServerStart();
             timerRefresh.Start();         
         }
 
@@ -80,7 +85,7 @@ namespace AudioDivider
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Communication.ServerStop();
+            communication.ServerStop();
         }
 
 
@@ -102,7 +107,7 @@ namespace AudioDivider
             int pid = (int)treeSound.SelectedNode.Tag;
             controlledPrograms.Add(new ControlledProgram(treeSound.SelectedNode.Text));
 
-            Injector.Inject(pid);
+            injector.Inject(pid);
         }
 
         private void treeSound_AfterSelect(object sender, TreeViewEventArgs e)
@@ -153,7 +158,7 @@ namespace AudioDivider
                 int pid = (int)treeSound.SelectedNode.Tag;
                 string deviceId = devices[combo_Devices.SelectedIndex].ID;
 
-                Communication.ServerSend(pid, 1, deviceId);
+                communication.ServerSend(pid, 1, deviceId);
             }
 
             SoundHandler.switchDefaultDevice();

@@ -9,6 +9,15 @@ namespace AudioDivider
 {
     class Communication
     {
+
+        Logger logger;
+        Security security;
+        public Communication()
+        {
+            logger = Logger.getLogger();
+            security = new Security();
+        }
+
         // Message format, as used in the DLLs
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 1)]
         struct ClientMessage
@@ -36,19 +45,19 @@ namespace AudioDivider
             }
         };
 
-        static List<IntPtr> Clients = new List<IntPtr>();
+        List<IntPtr> Clients = new List<IntPtr>();
 
-        static int PipeBufferSize = 1000;
-        static string pipeName = "\\\\.\\pipe\\SoundInjectController";
+        int PipeBufferSize = 1000;
+        string pipeName = "\\\\.\\pipe\\SoundInjectController";
 
-        static Thread serverThread;
-        static volatile bool serverRunning;
+        Thread serverThread;
+        volatile bool serverRunning;
 
-        static void PipeServerThread()
+        void PipeServerThread()
         {
             try
             {
-                Logging.Log("Waiting for clients.");
+                logger.Log("Waiting for clients.");
                 serverRunning = true;
                 bool first = true;
                 while (serverRunning)
@@ -69,7 +78,7 @@ namespace AudioDivider
                     {
                         first = false;
                         hPipe = Native.CreateNamedPipe(pipeName, Native.PIPE_ACCESS_DUPLEX | Native.WRITE_DAC | Native.ACCESS_SYSTEM_SECURITY | Native.WRITE_OWNER, Native.PIPE_TYPE_MESSAGE | Native.PIPE_READMODE_MESSAGE | Native.PIPE_WAIT | Native.PIPE_REJECT_REMOTE_CLIENTS, Native.PIPE_UNLIMITED_INSTANCES, PipeBufferSize, PipeBufferSize, 0, ref SA);
-                        Security.SetLowIntegrity(hPipe);
+                        security.SetLowIntegrity(hPipe);
                     }
                     else // only first pipe can change dacl/sacl
                     {
@@ -77,7 +86,7 @@ namespace AudioDivider
                     }
                     if (hPipe == Native.INVALID_HANDLE_VALUE)
                     {
-                        Logging.Log("CreateNamedPipe failed: ", Marshal.GetLastWin32Error());
+                        logger.Log("CreateNamedPipe failed: ", Marshal.GetLastWin32Error());
                         Thread.Sleep(1000);
                     }
                    
@@ -88,35 +97,35 @@ namespace AudioDivider
                         if (Marshal.GetLastWin32Error() == 535) // ERROR_PIPE_CONNECTED
                         {
                             Clients.Add(hPipe);
-                            Logging.Log("AcceptedClient.");
+                            logger.Log("AcceptedClient.");
                         }
                         else
                         {
-                            Logging.Log("ConnectNamedPipe failed: ", Marshal.GetLastWin32Error());
+                            logger.Log("ConnectNamedPipe failed: ", Marshal.GetLastWin32Error());
                         }
                     }
                     else
                     {
                         Clients.Add(hPipe);
-                        Logging.Log("AcceptedClient.");
+                        logger.Log("AcceptedClient.");
                     }
                 }
             }
             catch (Exception e)
             {
-                Logging.Error(e.Message);
+                logger.Error(e.Message);
             }
 
         }
 
-        public static void ServerStart()
+        public void ServerStart()
         {
             serverThread = new Thread(PipeServerThread);
             serverThread.IsBackground = true;
             serverThread.Start();
         }
 
-        public static void ServerStop()
+        public void ServerStop()
         {
             serverRunning = false;
             serverThread.Abort();
@@ -124,7 +133,7 @@ namespace AudioDivider
         }
 
         // Sends a message to all hooked processes. The DLLs decide whether the message should be processed using the process ID
-        public static void ServerSend(int pid, int action, string messageStr)
+        public void ServerSend(int pid, int action, string messageStr)
         {
             string mes = Console.ReadLine();
             for (int i = 0; i < Clients.Count; i++)
@@ -138,13 +147,13 @@ namespace AudioDivider
                 {
                     if (Native.GetLastError() == Native.ERROR_NO_DATA)
                     {
-                        Logging.Log("Client disconnected.");
+                        logger.Log("Client disconnected.");
                         Clients.RemoveAt(i);
                         i--;
                     }
                     else
                     {
-                        Logging.Log("WriteFile failed: ", Native.GetLastError());
+                        logger.Log("WriteFile failed: ", Native.GetLastError());
                     }
                 }
                 Marshal.FreeHGlobal(nativeMessage);

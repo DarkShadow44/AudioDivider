@@ -72,6 +72,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -83,6 +84,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communication.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="IniConfiguration.cs" />
     <Compile Include="Inject.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="AudioDivider.cs">
@@ -97,6 +100,7 @@
     <Compile Include="SoundHandler.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StringExtensions.cs" />
     <Compile Include="WASAPI\EnumsAndStructs.cs" />
     <Compile Include="WASAPI\Interfaces.cs" />
   </ItemGroup>
@@ -132,6 +136,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Todo.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

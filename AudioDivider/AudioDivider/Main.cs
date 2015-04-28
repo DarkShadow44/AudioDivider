@@ -11,11 +11,16 @@ namespace AudioDivider
 {
     static class Program
     {
+        static Configuration configuration;
         [STAThread]
         static void Main()
         {
-            Logging.workingDirectory = Directory.GetCurrentDirectory() + "\\";
-            Registry.SetValue(@"HKEY_CURRENT_USER\SOFTWARE\AudioDivider", "Path", Logging.workingDirectory);
+            string workingDirectory = Directory.GetCurrentDirectory() + "\\";
+            configuration = new Configuration(workingDirectory);
+            Logger.setLogger(new Logger(configuration));
+
+
+            Registry.SetValue(@"HKEY_CURRENT_USER\SOFTWARE\AudioDivider", "Path", configuration.DataFolder);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
