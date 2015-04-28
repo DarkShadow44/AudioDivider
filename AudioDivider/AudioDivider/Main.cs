@@ -7,7 +7,7 @@ using System.Security.Principal;
 using Microsoft.Win32;
 using System.IO;
 
-namespace AudioControl
+namespace AudioDivider
 {
     static class Program
     {
@@ -15,16 +15,11 @@ namespace AudioControl
         static void Main()
         {
             Logging.workingDirectory = Directory.GetCurrentDirectory() + "\\";
-            Registry.SetValue(@"HKEY_CURRENT_USER\SOFTWARE\AudioDivider", "Path", Logging.workingDirectory); 
-            bool admin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-            if (!admin)
-            {
-                MessageBox.Show("This program needs admin rights.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            Registry.SetValue(@"HKEY_CURRENT_USER\SOFTWARE\AudioDivider", "Path", Logging.workingDirectory);
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new AudioDivider());
+            Application.Run(new FormAudioDivider());
         }
     }
 }

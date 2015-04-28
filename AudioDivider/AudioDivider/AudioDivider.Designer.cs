@@ -1,6 +1,6 @@
-﻿namespace AudioControl
+﻿namespace AudioDivider
 {
-    partial class AudioDivider
+    partial class FormAudioDivider
     {
         /// <summary>
         /// Required designer variable.

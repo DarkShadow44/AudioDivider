@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.IO;
 
-namespace AudioControl
+namespace AudioDivider
 {
     class Logging
     {

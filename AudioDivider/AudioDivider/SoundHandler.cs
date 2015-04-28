@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
-using AudioControl.WASAPI;
+using AudioDivider.WASAPI;
 
-namespace AudioControl
+namespace AudioDivider
 {
     class SoundInfoDevice
     {

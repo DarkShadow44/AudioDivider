@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace AudioControl
+namespace AudioDivider
 {
     class Communication
     {

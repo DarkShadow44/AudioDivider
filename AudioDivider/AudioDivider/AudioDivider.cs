@@ -8,11 +8,11 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 
-namespace AudioControl
+namespace AudioDivider
 {
-    public partial class AudioDivider : Form
+    public partial class FormAudioDivider : Form
     {
-        public AudioDivider()
+        public FormAudioDivider()
         {
             InitializeComponent();
         }
