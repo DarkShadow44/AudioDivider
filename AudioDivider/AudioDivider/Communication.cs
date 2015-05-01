@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace AudioDivider
 {
-    class Communication
+   public class Communication
     {
 
         Logger logger;

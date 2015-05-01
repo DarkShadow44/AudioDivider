@@ -15,31 +15,65 @@ namespace AudioDivider
 
         Communication communication;
         Injector injector;
+        Configuration configuration;
+        AutoInjectHandler autoInjectHandler;
 
-        public FormAudioDivider()
+        public FormAudioDivider(Configuration configuration, Communication communication)
         {
+            this.configuration = configuration;
             InitializeComponent();
-            communication = new Communication();
+            this.communication = communication;
             injector = new Injector();
+            communication.ServerStart();
+
+            autoInjectHandler = new AutoInjectHandler(configuration, communication);
+
+            chk_OnlyShowActive.Checked = configuration.ShowOnlyActivePrograms;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            communication.ServerStart();
-            timerRefresh.Start();         
+            timerRefresh.Start();
         }
 
-        class ControlledProgram
+        List<ProgramInfo> controlledPrograms = new List<ProgramInfo>();
+        List<ProgramInfo> runningPrograms = new List<ProgramInfo>();
+
+        ProgramInfo GetRunningProgram(ProgramInfo program)
         {
-            public string name;
-            public ControlledProgram(string name)
+            foreach (var runningProgram in runningPrograms)
             {
-                this.name = name;
+                if (runningProgram.pid == program.pid)
+                    return runningProgram;
             }
+            return null;
         }
-        List<ControlledProgram> controlledPrograms = new List<ControlledProgram>();
 
         void RefreshSoundInfo()
+        {
+            if (configuration.ShowOnlyActivePrograms)
+                runningPrograms.Clear();
+
+            runningPrograms.RemoveAll(program => !program.IsAlive());
+
+            List<SoundInfoDevice> devices = SoundHandler.getSoundInfo();
+
+            foreach (var device in devices)
+            {
+                foreach (var program in device.sessions)
+                {
+                    ProgramInfo runningProgram = new ProgramInfo(program.windowName, program.pid, device.ID);
+                    ProgramInfo runningProgramExisting = GetRunningProgram(runningProgram);
+                    if (runningProgramExisting == null)
+                        runningPrograms.Add(runningProgram);
+                    else
+                        runningProgramExisting.deviceID = runningProgram.deviceID;
+                    autoInjectHandler.RunDelayedInject(program.pid);
+                }
+            }
+        }
+
+        void UpdateForm()
         {
             treeSound.BeginUpdate();
 
@@ -50,26 +84,30 @@ namespace AudioDivider
             }
             string selectedDevice = (string)combo_Devices.SelectedItem;
 
-           
+
             treeSound.Nodes.Clear();
             combo_Devices.Items.Clear();
+
 
             List<SoundInfoDevice> devices = SoundHandler.getSoundInfo();
             foreach (var device in devices)
             {
-                TreeNode node = treeSound.Nodes.Add(device.name);
                 combo_Devices.Items.Add(device.name);
-                foreach (var session in device.sessions)
+                TreeNode nodeDevice = treeSound.Nodes.Add(device.name);
+                for (int i = 0; i < runningPrograms.Count; i++)
                 {
-                    TreeNode nodeSession = node.Nodes.Add(session.windowName + " (" + session.pid + ")");
-                    nodeSession.Tag = session.pid;
+                    if (runningPrograms[i].deviceID == device.ID)
+                    {
+                        TreeNode nodeProgram = nodeDevice.Nodes.Add(runningPrograms[i].name + " (" + runningPrograms[i].pid + ")");
+                        nodeProgram.Tag = i;
+                    }
                 }
             }
 
             treeSound.ExpandAll();
 
-          
-            foreach(TreeNode nodeDevice in treeSound.Nodes)
+
+            foreach (TreeNode nodeDevice in treeSound.Nodes)
             {
                 if (nodeDevice.Text == selectedNodeName)
                     treeSound.SelectedNode = nodeDevice;
@@ -83,70 +121,50 @@ namespace AudioDivider
             treeSound.EndUpdate();
         }
 
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             communication.ServerStop();
+            autoInjectHandler.Stop();
         }
 
 
         private void timerRefresh_Tick(object sender, EventArgs e)
         {
+            changedbyUser = false;
             RefreshSoundInfo();
+            UpdateForm();
+            changedbyUser = true;
         }
-        bool chk_Controlled_ChangedbyUser = true;
+
+        bool changedbyUser = true;
         private void chk_Controlled_CheckedChanged(object sender, EventArgs e)
         {
-            if (!chk_Controlled_ChangedbyUser)
+            if (!changedbyUser)
                 return;
-           
-            combo_Devices.Enabled = true;
-            chk_Controlled_ChangedbyUser = false;
-            chk_Controlled.Enabled = false;
-            chk_Controlled_ChangedbyUser = true;
 
-            int pid = (int)treeSound.SelectedNode.Tag;
-            controlledPrograms.Add(new ControlledProgram(treeSound.SelectedNode.Text));
+            ProgramInfo activeProgram = runningPrograms[(int)treeSound.SelectedNode.Tag];
 
-            injector.Inject(pid);
+            if (chk_Controlled.Checked)
+            {
+                controlledPrograms.Add(new ProgramInfo(activeProgram.name, activeProgram.pid, null));
+
+                injector.Inject(activeProgram.pid);
+            }
+            else
+            {
+                controlledPrograms.RemoveAll(program=>program.pid == activeProgram.pid);
+            }
+
+            UpdateState();
         }
 
         private void treeSound_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            chk_Controlled_ChangedbyUser = false;
-            if (treeSound.Nodes.Contains(treeSound.SelectedNode)) // Is a Device
-            {
-                chk_Controlled.Enabled = false;
-                chk_Controlled.Checked = false;
-                combo_Devices.Enabled = false;
-                btn_Set.Enabled = false;
-                chk_Controlled_ChangedbyUser = true;
+            if (!changedbyUser)
                 return;
-            }
-           
 
-            bool alreadyControlled = false;
-            foreach(var controlledProgram in controlledPrograms)
-            {
-                if (controlledProgram.name == treeSound.SelectedNode.Text)
-                    alreadyControlled = true;
-            }
-
-            if (alreadyControlled)
-            {
-                chk_Controlled.Checked = true;
-                chk_Controlled.Enabled = false;
-                combo_Devices.Enabled = true;
-                btn_Set.Enabled = true;
-            }
-            else
-            {
-                chk_Controlled.Checked = false;
-                chk_Controlled.Enabled = true;
-                combo_Devices.Enabled = false;
-                btn_Set.Enabled = false;
-            }
-            chk_Controlled_ChangedbyUser = true;
-           
+            UpdateState();
         }
 
         private void btn_Set_Click(object sender, EventArgs e)
@@ -155,7 +173,7 @@ namespace AudioDivider
             {
                 List<SoundInfoDevice> devices = SoundHandler.getSoundInfo();
 
-                int pid = (int)treeSound.SelectedNode.Tag;
+                int pid = runningPrograms[(int)treeSound.SelectedNode.Tag].pid;
                 string deviceId = devices[combo_Devices.SelectedIndex].ID;
 
                 communication.ServerSend(pid, 1, deviceId);
@@ -166,5 +184,105 @@ namespace AudioDivider
 
             RefreshSoundInfo();
         }
+
+        private void chk_OnlyShowActive_CheckedChanged(object sender, EventArgs e)
+        {
+            configuration.ShowOnlyActivePrograms = chk_OnlyShowActive.Checked;
+        }
+
+        private void chk_AutoControl_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!changedbyUser)
+                return;
+
+            ProgramInfo activeProgram = runningPrograms[(int)treeSound.SelectedNode.Tag];
+            if (chk_AutoControl.Checked)
+            {
+                FormAutoControl autoControl = new FormAutoControl(new ProgramInfo(activeProgram.name, activeProgram.pid, null));
+                if (autoControl.ShowDialog() == DialogResult.OK)
+                {
+                    configuration.AutoControlAdd(autoControl.GetProgramAutoInfo());
+                    autoInjectHandler.RunInjectsAll();
+                }
+            }
+            else
+            {
+                configuration.AutoControlRemove(activeProgram.Path, activeProgram.name);
+            }
+
+            UpdateState();
+        }
+
+        void UpdateState()
+        {
+            combo_Devices.SelectedIndex = -1;
+
+            changedbyUser = false;
+
+            if (treeSound.SelectedNode == null || treeSound.SelectedNode.Tag == null) // not a program selected
+            {
+                chk_Controlled.Enabled = false;
+                chk_Controlled.Checked = false;
+
+                chk_AutoControl.Enabled = false;
+                chk_AutoControl.Checked = false;
+
+                combo_Devices.Enabled = false;
+
+                btn_Set.Enabled = false;
+                changedbyUser = true;
+                return;
+            }
+
+            ProgramInfo activeProgram = runningPrograms[(int)treeSound.SelectedNode.Tag];
+
+            bool alreadyControlled = false;
+            foreach (var controlledProgram in controlledPrograms)
+            {
+                if (controlledProgram.pid == activeProgram.pid)
+                    alreadyControlled = true;
+            }
+
+            if (alreadyControlled)
+            {
+                chk_Controlled.Enabled = true;
+                chk_Controlled.Checked = true;
+
+                chk_AutoControl.Enabled = false;
+                chk_AutoControl.Checked = false;
+
+                combo_Devices.Enabled = true;
+
+                btn_Set.Enabled = true;
+            }
+            else
+            {
+                if (configuration.AutoControlExists(activeProgram.Path, activeProgram.name))
+                {
+                    chk_Controlled.Enabled = false;
+                    chk_Controlled.Checked = false;
+
+                    chk_AutoControl.Enabled = true;
+                    chk_AutoControl.Checked = true;
+
+                    combo_Devices.Enabled = false;
+                    btn_Set.Enabled = false;
+                }
+                else
+                {
+                    chk_Controlled.Enabled = true;
+                    chk_Controlled.Checked = false;
+
+                    chk_AutoControl.Enabled = true;
+                    chk_AutoControl.Checked = false;
+
+                    combo_Devices.Enabled = false;
+                    btn_Set.Enabled = false;
+                }
+            }
+
+            changedbyUser = true;
+        }
+
     }
 }

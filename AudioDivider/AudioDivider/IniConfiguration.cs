@@ -78,11 +78,6 @@ namespace AudioDivider
             }
         }
 
-        public void SetValueInt(string nameSection, string nameProperty, int value)
-        {
-            SetValueString(nameSection, nameProperty, value.ToString());
-        }
-
         public string GetValueString(string nameSection, string nameProperty)
         {
             Section section = TryGetSection(nameSection);
@@ -94,6 +89,43 @@ namespace AudioDivider
                 return null;
 
             return property.value;
+        }
+
+        public void SetValueInt(string nameSection, string nameProperty, int value)
+        {
+            SetValueString(nameSection, nameProperty, value.ToString());
+        }
+
+        public int GetValueInt(string nameSection, string nameProperty, int defaultValue)
+        {
+            string value = GetValueString(nameSection, nameProperty);
+
+            if (value == null)
+                return defaultValue;
+
+            int valueInt;
+            if (int.TryParse(value, out valueInt))
+                return valueInt;
+            else
+                return defaultValue;
+        }
+
+        public void SetValueBool(string nameSection, string nameProperty, bool value)
+        {
+            SetValueString(nameSection, nameProperty, value ? "true" : "false");
+        }
+
+        public bool GetValueBool(string nameSection, string nameProperty, bool defaultValue)
+        {
+             string value = GetValueString(nameSection, nameProperty);
+             if (value == null)
+                 return defaultValue;
+
+             bool valueBool;
+             if (bool.TryParse(value, out valueBool))
+                 return valueBool;
+             else
+                 return defaultValue;
         }
 
         public void Save(Stream stream)

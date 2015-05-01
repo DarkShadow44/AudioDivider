@@ -34,6 +34,8 @@
             this.combo_Devices = new System.Windows.Forms.ComboBox();
             this.chk_Controlled = new System.Windows.Forms.CheckBox();
             this.btn_Set = new System.Windows.Forms.Button();
+            this.chk_OnlyShowActive = new System.Windows.Forms.CheckBox();
+            this.chk_AutoControl = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // treeSound
@@ -83,16 +85,41 @@
             this.btn_Set.UseVisualStyleBackColor = true;
             this.btn_Set.Click += new System.EventHandler(this.btn_Set_Click);
             // 
-            // AudioDivider
+            // chk_OnlyShowActive
+            // 
+            this.chk_OnlyShowActive.AutoSize = true;
+            this.chk_OnlyShowActive.Location = new System.Drawing.Point(12, 32);
+            this.chk_OnlyShowActive.Name = "chk_OnlyShowActive";
+            this.chk_OnlyShowActive.Size = new System.Drawing.Size(196, 17);
+            this.chk_OnlyShowActive.TabIndex = 8;
+            this.chk_OnlyShowActive.Text = "Show only programs currently active";
+            this.chk_OnlyShowActive.UseVisualStyleBackColor = true;
+            this.chk_OnlyShowActive.CheckedChanged += new System.EventHandler(this.chk_OnlyShowActive_CheckedChanged);
+            // 
+            // chk_AutoControl
+            // 
+            this.chk_AutoControl.AutoSize = true;
+            this.chk_AutoControl.Enabled = false;
+            this.chk_AutoControl.Location = new System.Drawing.Point(689, 104);
+            this.chk_AutoControl.Name = "chk_AutoControl";
+            this.chk_AutoControl.Size = new System.Drawing.Size(81, 17);
+            this.chk_AutoControl.TabIndex = 10;
+            this.chk_AutoControl.Text = "AutoControl";
+            this.chk_AutoControl.UseVisualStyleBackColor = true;
+            this.chk_AutoControl.CheckedChanged += new System.EventHandler(this.chk_AutoControl_CheckedChanged);
+            // 
+            // FormAudioDivider
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1009, 461);
+            this.Controls.Add(this.chk_AutoControl);
+            this.Controls.Add(this.chk_OnlyShowActive);
             this.Controls.Add(this.btn_Set);
             this.Controls.Add(this.chk_Controlled);
             this.Controls.Add(this.combo_Devices);
             this.Controls.Add(this.treeSound);
-            this.Name = "AudioDivider";
+            this.Name = "FormAudioDivider";
             this.Text = "AudioDivider";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
@@ -108,5 +135,7 @@
         private System.Windows.Forms.ComboBox combo_Devices;
         private System.Windows.Forms.CheckBox chk_Controlled;
         private System.Windows.Forms.Button btn_Set;
+        private System.Windows.Forms.CheckBox chk_OnlyShowActive;
+        private System.Windows.Forms.CheckBox chk_AutoControl;
     }
 }

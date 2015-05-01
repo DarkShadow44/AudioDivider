@@ -15,16 +15,20 @@ namespace AudioDivider
         [STAThread]
         static void Main()
         {
-            string workingDirectory = Directory.GetCurrentDirectory() + "\\";
-            configuration = new Configuration(workingDirectory);
             Logger.setLogger(new Logger(configuration));
 
+            Communication communication = new Communication();
 
+            string workingDirectory = Directory.GetCurrentDirectory() + "\\";
+
+            configuration = new Configuration(workingDirectory);
+            configuration.Load();
+           
             Registry.SetValue(@"HKEY_CURRENT_USER\SOFTWARE\AudioDivider", "Path", configuration.DataFolder);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormAudioDivider());
+            Application.Run(new FormAudioDivider(configuration, communication));
         }
     }
 }
