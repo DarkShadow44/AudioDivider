@@ -22,7 +22,14 @@ namespace AudioDivider
 
         public bool IsAlive()
         {
-            return !process.HasExited;
+            try
+            {
+                return !process.HasExited;
+            }
+            catch (Exception)
+            {
+                return true;
+            }
         }
 
         public string Path
